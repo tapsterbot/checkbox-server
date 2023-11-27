@@ -118,7 +118,10 @@ If all is well you should see a video device at /dev/video0
     
 ## Install Checkbox Server 
     cd ~/Projects/checkbox
+    source env/bin/activate    
     git clone https://github.com/tapsterbot/checkbox-server.git
+    cd checkbox-server
+    pip install -r requirements.txt
 
 ## Run video setup
     cd ~/Projects/checkbox/checkbox-server/video-driver
