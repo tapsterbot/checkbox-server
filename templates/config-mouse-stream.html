@@ -1,0 +1,78 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=0.1">
+    <title>Checkbox - Config - Mouse</title>
+  <style>
+
+    body {
+      margin: 0px;
+      height: 100%;
+      background-color: gray;
+    }
+
+    .container {
+
+    }
+
+    button {
+      margin: 10;
+      padding: 10;
+    }
+    .button {
+
+    }
+    .feed {
+
+    }
+
+    img {
+      display: block;
+      -webkit-user-select: none;
+      margin: auto;
+      width: 100%;
+    }
+  </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="button">
+        <!-- <h2>Configure Mouse</h2> -->
+        <button id="save-mouse" disabled>Configure Mouse</button>
+      </div>
+      <div class="feed">
+        <img src="{{ url_for('config_mouse_feed') }}">
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      function startMouseConfig() {
+        var result = fetch(location.origin + '/api/config/mouse/start', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          //body: JSON.stringify({ "x": 123, "y": 456 })
+        }).then(/*response => console.log(response.statusText)*/)
+      }
+
+      var mouseButton = document.getElementById('save-mouse')
+      mouseButton.addEventListener("click", startMouseConfig)
+
+      function updateImageStyle() {
+        img = document.getElementsByTagName('img')[0]
+        if (img.naturalHeight > img.naturalWidth) { // Vertical
+          img.style.height = "90%"
+          img.style.width = "auto"
+        } else {
+          img.style.height = "auto"
+          img.style.width = "100%"
+        }
+      }
+
+      imageUpdater = setInterval(updateImageStyle, 100)
+
+    </script>
+
+  </body>
+</html>

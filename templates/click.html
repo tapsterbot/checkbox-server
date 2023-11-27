@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <link rel="stylesheet" href="/static/css/click.css">
+    <script type="text/javascript" src="/static/js/lib/qrcode/qrcode.js"></script>
+  </head>
+  <body>
+    <div id="container" style="display: flex;">
+      <p><div class="spacer" id="qrcode"></div></p>
+      <div style="flex: 1;">
+        <p class="position">x: <span id="x">0</span></p>
+        <p class="position">y: <span id="y">0</span></p>
+        <p class="info">browser width: <span id="bWidth"></span></p>
+        <p class="info">browser height: <span id="bHeight"></span></p>
+        <p class="info">screen width: <span id="sWidth"></span></p>
+        <p class="info">screen height: <span id="sHeight"></span></p>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      function getTouchPosition(event) {
+        //var offsetY = window.outerHeight - window.innerHeight
+        var xpos = Math.round(event.screenX)
+        //var ypos = Math.round(event.screenY + offsetY)
+        var ypos = Math.round(event.screenY)
+        var screenWidth = window.screen.width
+        var screenHeight = window.screen.height
+
+        var qrinfo = {
+          "x": xpos,
+          "y": ypos,
+          "w": screenWidth,
+          "h": screenHeight
+        }
+        qrinfostring = JSON.stringify(qrinfo)
+
+        qrcode.clear()
+        qrcode.makeCode(qrinfostring)
+        var qrcodeElement = document.getElementById("qrcode")
+
+        document.getElementById('x').textContent = xpos
+        document.getElementById('y').textContent = ypos
+        document.getElementById('bWidth').textContent = window.innerWidth
+        document.getElementById('bHeight').textContent = window.innerHeight
+        document.getElementById('sWidth').textContent = screenWidth
+        document.getElementById('sHeight').textContent = screenHeight
+
+        var result = fetch(location.origin + '/api/config/mouse/click', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ "x": xpos, "y": ypos })
+        }).then(/*response => console.log(response.statusText)*/)
+
+      }
+
+      window.document.addEventListener('click', getTouchPosition, false)
+      var qrcode = new QRCode(document.getElementById("qrcode"), "{}")
+    </script>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "configured": false,
+  "point1": {
+    "robot": {
+      "x": 0,
+      "y": 0
+    },
+    "screen": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "point2": {
+    "robot": {
+      "x": 0,
+      "y": 0
+    },
+    "screen": {
+      "x": 0,
+      "y": 0
+    }
+  }
+}

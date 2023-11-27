@@ -1,0 +1,62 @@
+<html>
+  <head>
+    <title>Checkbox - Config - Video</title>
+  <style>
+
+    body {
+        margin: 0;
+        background-color: gray;
+    }
+
+    .container {
+      position: absolute;
+      width:100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    button {
+      margin: 10;
+      padding: 10;
+    }
+    .button {
+
+    }
+    .feed {
+
+    }
+    img {
+      width: 100%;
+      height: auto;
+    }
+  </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="button">
+        <button id="save-video">Save Video Size</button>
+      </div>
+      <div class="feed">
+        <img src="{{ url_for('config_video_feed') }}">
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      function saveVideoData() {
+        console.log("yo")
+        var result = fetch(location.origin + '/api/config/video/data', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        }).then(/*response => console.log(response.statusText)*/)
+      }
+
+      var videoButton = document.getElementById('save-video')
+      videoButton.addEventListener("click", saveVideoData)
+
+    </script>
+
+  </body>
+</html>
