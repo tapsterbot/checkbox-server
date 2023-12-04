@@ -36,6 +36,28 @@ from zero_hid import Mouse
 from flask import Flask, request, render_template, Response
 from routes import index, config, mouse, keyboard
 
+
+# TODO: Use output from "libcamera-hello --list-cameras" instead of requiring a flag
+import argparse
+parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
+parser.add_argument('--video', help="video source: camera or hdmi\n" + \
+                                    "example:\n" + \
+                                    "  python server.py --video=camera\n" + \
+                                    "  python server.py --video=hdmi\n\n")
+
+args = parser.parse_args()
+
+if args.video:
+    video_source = args.video
+else:
+    video_source = "hdmi"
+
+if video_source == "hdmi":
+    from routes import video_hdmi as video
+elif video_source == "camera":
+    from routes import video_camera as video
+
+
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
@@ -71,10 +93,12 @@ app.add_url_rule('/config/blank', view_func=config.blank)
 #app.add_url_rule('/config/click', view_func=config.click)
 #app.add_url_rule('/api/config/mouse/click', view_func=config.api_config_mouse_click, methods=['POST'])
 #app.add_url_rule('/api/config/mouse/last-click', view_func=config.api_config_mouse_last_click)
-app.add_url_rule('/api/config/mouse/start', view_func=video.api_start_mouse_config, methods=['POST'])
-app.add_url_rule('/api/config/mouse/position', view_func=video.api_config_get_mouse_position)
-app.add_url_rule('/api/config/mouse/screen-position', view_func=video.api_config_get_mouse_screen_position)
-app.add_url_rule('/api/config/video/data', view_func=video.api_video_config_data, methods=['POST'])
+if video_source == "hdmi":
+    app.add_url_rule('/api/config/mouse/start', view_func=video.api_start_mouse_config, methods=['POST'])
+    app.add_url_rule('/api/config/mouse/position', view_func=video.api_config_get_mouse_position)
+    app.add_url_rule('/api/config/mouse/screen-position', view_func=video.api_config_get_mouse_screen_position)
+    app.add_url_rule('/api/config/video/data', view_func=video.api_video_config_data, methods=['POST'])
+
 
 # Mouse Routes
 app.add_url_rule('/api/mouse/jiggle', view_func=mouse.api_mouse_jiggle)
@@ -101,20 +125,32 @@ app.add_url_rule('/api/keyboard/type', view_func=keyboard.api_keyboard_type, met
 app.add_url_rule('/api/keyboard/press', view_func=keyboard.api_keyboard_press, methods=['POST'])
 
 # Video Routes
-app.add_url_rule('/stream', view_func=video.stream)
-app.add_url_rule('/video-feed', view_func=video.video_feed)
+if video_source == "hdmi":
+    app.add_url_rule('/stream', view_func=video.stream)
+    app.add_url_rule('/video-feed', view_func=video.video_feed)
 
-app.add_url_rule('/raw/stream', view_func=video.raw_stream)
-app.add_url_rule('/raw/video-feed', view_func=video.raw_video_feed)
+    app.add_url_rule('/raw/stream', view_func=video.raw_stream)
+    app.add_url_rule('/raw/video-feed', view_func=video.raw_video_feed)
 
-app.add_url_rule('/config/video', view_func=video.config_video)
-app.add_url_rule('/config/video-feed', view_func=video.config_video_feed)
+    app.add_url_rule('/config/video', view_func=video.config_video)
+    app.add_url_rule('/config/video-feed', view_func=video.config_video_feed)
 
-app.add_url_rule('/config/mouse', view_func=video.config_mouse)
-app.add_url_rule('/config/mouse-feed', view_func=video.config_mouse_feed)
+    app.add_url_rule('/config/mouse', view_func=video.config_mouse)
+    app.add_url_rule('/config/mouse-feed', view_func=video.config_mouse_feed)
 
-app.add_url_rule('/screenshot', view_func=video.api_screenshot)
-app.add_url_rule('/api/screenshot', view_func=video.api_screenshot)
+    app.add_url_rule('/screenshot', view_func=video.api_screenshot)
+    app.add_url_rule('/api/screenshot', view_func=video.api_screenshot)
+
+if video_source == "camera":
+    app.add_url_rule('/screenshot', view_func=video.api_screenshot)
+    app.add_url_rule('/api/screenshot', view_func=video.api_screenshot)
+    app.add_url_rule('/screenshot/gray', view_func=video.api_screenshot)
+    app.add_url_rule('/api/screenshot/gray', view_func=video.api_screenshot)
+    app.add_url_rule('/stream', view_func=video.stream)
+    app.add_url_rule('/video-feed', view_func=video.video_feed)
+    app.add_url_rule('/raw/stream', view_func=video.raw_stream)
+    app.add_url_rule('/raw/video-feed', view_func=video.raw_video_feed)
+    app.add_url_rule('/api/config/video/camera', view_func=video.api_config_video, methods=['POST'])
 
 
 if __name__ == '__main__':
