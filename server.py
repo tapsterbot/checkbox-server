@@ -34,7 +34,7 @@ import mapper
 import numpy as np
 from zero_hid import Mouse
 from flask import Flask, request, render_template, Response
-from routes import index, config, mouse, video, keyboard
+from routes import index, config, mouse, keyboard
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -98,6 +98,7 @@ app.add_url_rule('/api/raw/mouse-keys/move/by', view_func=mouse.api_raw_mouse_ke
 
 # Keyboard Routes
 app.add_url_rule('/api/keyboard/type', view_func=keyboard.api_keyboard_type, methods=['POST'])
+app.add_url_rule('/api/keyboard/press', view_func=keyboard.api_keyboard_press, methods=['POST'])
 
 # Video Routes
 app.add_url_rule('/stream', view_func=video.stream)
