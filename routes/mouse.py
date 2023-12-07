@@ -12,6 +12,9 @@ from zero_hid.hid.keyboard import send_keystroke
 # Set up mouse
 m = Mouse()
 
+last_x_pos = -100
+last_y_pos = -100
+
 # # Config helper functions
 # def app_file_path():
 #     # Get the app filepath
@@ -147,22 +150,32 @@ def api_mouse_keys_click():
     return Response()
 
 def api_mouse_keys_move_to():
+    global last_x_pos
+    global last_y_pos
     req = request.json
-    x_pos = req.get("x")
-    y_pos = req.get("y")
+    x_pos = int(req.get("x"))
+    y_pos = int(req.get("y"))
+    x_pos, y_pos = mapper.transformPoint(x_pos, y_pos, current_app.transformationMatrix)
     print("Mouse keys move: (%s, %s)" % (x_pos, y_pos))
-    mouse_move_by(-500, -1000)
-    mouse_keys_move_by(0, 4)
-    mouse_keys_move_by(-10, 0)
-    mouse_keys_move_by(4, 0)
-    mouse_keys_move_by(0, -10)
-    mouse_keys_move_by(0, 4)
-    mouse_keys_move_by(x_pos, y_pos, transform = True)
+    if (last_x_pos > -100 and last_y_pos > -100):
+        mouse_keys_move_by(x_pos - last_x_pos, y_pos - last_y_pos)
+    else:
+        mouse_move_by(-1500, -2000)
+        mouse_keys_move_by(0, 4)
+        mouse_keys_move_by(-10, 0)
+        mouse_keys_move_by(4, 0)
+        mouse_keys_move_by(0, -10)
+        mouse_keys_move_by(0, 4)
+        mouse_keys_move_by(x_pos, y_pos)
+
+    last_x_pos = x_pos
+    last_y_pos = y_pos
+
     return Response(mimetype="application/json")
 
 def api_mouse_keys_move_home():
     print("Mouse keys move home")
-    mouse_move_by(-500, -1000)
+    mouse_move_by(-1500, -2000)
     mouse_keys_move_by(0, 3)
     mouse_keys_move_by(-10, 0)
     mouse_keys_move_by(3, 0)
@@ -193,22 +206,40 @@ def mouse_keys_move_by(x, y, transform = False):
             x_pos, y_pos = mapper.transformPoint(x, y, current_app.transformationMatrix)
             print("Transform point to: (%s, %s)" % (x_pos, y_pos))
 
-    if x_pos < 0:
-        while x_pos < 0:
+    while x_pos != 0 or y_pos != 0:
+
+        if x_pos < 0 and y_pos < 0:
+            send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP7)
+            x_pos += 1
+            y_pos += 1
+
+        elif x_pos < 0 and y_pos > 0:
+            send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP1)
+            x_pos += 1
+            y_pos -= 1
+
+        elif x_pos < 0:
             send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP4)
             x_pos += 1
 
-    if x_pos > 0:
-        while x_pos > 0:
+        elif x_pos > 0 and y_pos < 0:
+            send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP9)
+            x_pos -= 1
+            y_pos += 1
+
+        elif x_pos > 0 and y_pos > 0:
+            send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP3)
+            x_pos -= 1
+            y_pos -= 1
+
+        elif x_pos > 0:
             send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP6)
             x_pos -= 1
 
-    if y_pos < 0:
-        while y_pos < 0:
+        elif y_pos < 0:
             send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP8)
             y_pos += 1
 
-    if y_pos > 0:
-        while y_pos > 0:
+        elif y_pos > 0:
             send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP2)
             y_pos -= 1
