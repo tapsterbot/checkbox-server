@@ -8,6 +8,8 @@ from zero_hid import Mouse
 from zero_hid.hid.mouse import send_mouse_event
 from zero_hid import Keyboard, KeyCodes
 from zero_hid.hid.keyboard import send_keystroke
+from flask_socketio import SocketIO
+import json
 
 # Set up mouse
 m = Mouse()
@@ -212,3 +214,25 @@ def mouse_keys_move_by(x, y, transform = False):
         while y_pos > 0:
             send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP2)
             y_pos -= 1
+
+######################################################################
+#
+# Websocket Mouse
+#
+######################################################################
+def handle_websocket_message(data):
+    print('received message: ' + str(data))
+    if data == "jiggle":
+        print("Jiggle!")
+        api_mouse_jiggle()
+    else:
+        print("JSON!")
+        #json_data = json.loads(data)
+        if data.get('type') == "connected":
+            print("Connected!")
+        elif data.get('type') == "mouseMove":
+            print("mouseMove!")
+            x_pos = data.get('data').get('x')
+            y_pos = data.get('data').get('y')
+            print(x_pos, y_pos)
+            mouse_move_by(x_pos, y_pos)

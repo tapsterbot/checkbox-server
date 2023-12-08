@@ -34,8 +34,9 @@ import mapper
 import numpy as np
 from zero_hid import Mouse
 from flask import Flask, request, render_template, Response
+from flask_socketio import SocketIO
 from routes import index, config, mouse, keyboard
-
+import uuid
 
 # TODO: Use output from "libcamera-hello --list-cameras" instead of requiring a flag
 import argparse
@@ -59,7 +60,9 @@ elif video_source == "camera":
 
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = uuid.uuid4().hex
 app.url_map.strict_slashes = False
+socketio = SocketIO(app)
 
 # Set up temp mouse data
 app.last_mouse_click = {"x": None, "y": None}
@@ -152,7 +155,10 @@ if video_source == "camera":
     app.add_url_rule('/raw/video-feed', view_func=video.raw_video_feed)
     app.add_url_rule('/api/config/video/camera', view_func=video.api_config_video, methods=['POST'])
 
+# WebSocket config
+socketio.on_event('message', mouse.handle_websocket_message)
 
 if __name__ == '__main__':
     # Debug/Development
-    app.run(debug=False, host="0.0.0.0", port="5000")
+    #app.run(debug=False, host="0.0.0.0", port="5000")
+    socketio.run(app, debug=False, host="0.0.0.0", port="5000")
