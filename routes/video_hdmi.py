@@ -6,6 +6,8 @@ import os
 import json
 import datetime
 
+print("Video mode: HDMI")
+
 # Video config helper functions
 def app_file_path():
     # Get the app filepath
