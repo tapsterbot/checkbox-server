@@ -12,3 +12,12 @@ def api_keyboard_type():
     print("Keyboard type text: %s" % text)
     k.type(text)
     return Response(mimetype="application/json")
+
+def api_keyboard_press():
+    req = request.json
+    modifiers = req.get("modifiers")
+    key = req.get("key")
+    print("Keyboard press modifiers: %s" % modifiers)
+    print("Keyboard press key: %s" % key)
+    k.press(modifiers, key)
+    return Response(mimetype="application/json")

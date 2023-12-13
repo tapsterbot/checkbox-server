@@ -1,23 +1,23 @@
 {
-  "configured": false,
+  "configured": true,
   "point1": {
     "robot": {
-      "x": 0,
-      "y": 0
+      "x": 10,
+      "y": 10
     },
     "screen": {
-      "x": 0,
-      "y": 0
+      "x": 200,
+      "y": 194
     }
   },
   "point2": {
     "robot": {
-      "x": 0,
-      "y": 0
+      "x": 10,
+      "y": 40
     },
     "screen": {
-      "x": 0,
-      "y": 0
+      "x": 200,
+      "y": 612
     }
   }
 }

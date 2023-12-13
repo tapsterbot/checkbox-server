@@ -82,6 +82,8 @@ app.add_url_rule('/api/mouse/down', view_func=mouse.api_mouse_down, methods=['PO
 app.add_url_rule('/api/mouse/up', view_func=mouse.api_mouse_up, methods=['POST'])
 app.add_url_rule('/api/mouse/click', view_func=mouse.api_mouse_click, methods=['POST'])
 app.add_url_rule('/api/mouse/move/by', view_func=mouse.api_mouse_move_by, methods=['POST'])
+app.add_url_rule('/api/mouse/move/to', view_func=mouse.api_mouse_move_to, methods=['POST'])
+app.add_url_rule('/api/mouse/scroll', view_func=mouse.api_mouse_scroll, methods=['POST'])
 app.add_url_rule('/api/mouse/move/home', view_func=mouse.api_mouse_move_home, methods=['POST'])
 app.add_url_rule('/api/raw/mouse/drag/by', view_func=mouse.api_raw_mouse_drag_by, methods=['POST'])
 app.add_url_rule('/api/raw/mouse/move/by', view_func=mouse.api_raw_mouse_move_by, methods=['POST'])
@@ -98,6 +100,7 @@ app.add_url_rule('/api/raw/mouse-keys/move/by', view_func=mouse.api_raw_mouse_ke
 
 # Keyboard Routes
 app.add_url_rule('/api/keyboard/type', view_func=keyboard.api_keyboard_type, methods=['POST'])
+app.add_url_rule('/api/keyboard/press', view_func=keyboard.api_keyboard_press, methods=['POST'])
 
 # Video Routes
 app.add_url_rule('/stream', view_func=video.stream)

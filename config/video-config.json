@@ -1,11 +1,11 @@
 {
   "vertical": {
-    "configured": false,
-    "timestamp": null,
-    "x": 0,
+    "configured": true,
+    "timestamp": "2023-12-01T12:54:06.653549+00:00",
+    "x": 710,
     "y": 0,
-    "w": 0,
-    "h": 0
+    "w": 499,
+    "h": 1080
   },
   "horizontal": {
     "configured": false,
