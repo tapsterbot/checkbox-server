@@ -94,6 +94,7 @@ def api_raw_mouse_swipe_up():
     # Mouse Drag
     send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)
     send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)
+    send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)    
     send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)  
     send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)     
     time.sleep(.2)
