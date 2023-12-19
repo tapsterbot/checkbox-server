@@ -111,6 +111,7 @@ app.add_url_rule('/api/mouse/click', view_func=mouse.api_mouse_click, methods=['
 app.add_url_rule('/api/mouse/move/by', view_func=mouse.api_mouse_move_by, methods=['POST'])
 app.add_url_rule('/api/mouse/move/home', view_func=mouse.api_mouse_move_home, methods=['POST'])
 app.add_url_rule('/api/raw/mouse/drag/by', view_func=mouse.api_raw_mouse_drag_by, methods=['POST'])
+app.add_url_rule('/api/raw/mouse/swipe/up', view_func=mouse.api_raw_mouse_swipe_up, methods=['POST'])
 app.add_url_rule('/api/raw/mouse/move/by', view_func=mouse.api_raw_mouse_move_by, methods=['POST'])
 
 # MouseKeys Routes
