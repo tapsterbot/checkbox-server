@@ -1,0 +1,20 @@
+$ sudo systemctl start checkbox-server
+$ sudo systemctl stop checkbox-server
+$ sudo systemctl restart checkbox-server
+$ sudo systemctl status checkbox-server
+
+# To install:
+$ sudo cp checkbox-server.service /etc/systemd/system/checkbox-server.service
+$ sudo chmod 644 /etc/systemd/system/checkbox-server.service
+
+# Update systemd
+$ sudo systemctl daemon-reload
+
+# Start it up!
+$ sudo systemctl start checkbox-server
+
+# Tail the logs
+$ journalctl -u checkbox-server -f
+
+# To make it run on boot
+$ sudo systemctl enable checkbox-server

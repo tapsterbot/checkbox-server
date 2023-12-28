@@ -1,0 +1,13 @@
+[Unit]
+Description=Checkbox Server
+After=network.target
+
+[Service]
+User=tapster
+WorkingDirectory=/home/tapster/Projects/checkbox/checkbox-server
+ExecStart=/home/tapster/Projects/checkbox/env/bin/python server.py --video=camera
+Restart=always
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
