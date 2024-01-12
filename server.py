@@ -37,6 +37,7 @@ from flask import Flask, request, render_template, Response
 from flask_socketio import SocketIO
 from routes import index, config, mouse, keyboard
 import uuid
+import os
 
 # TODO: Use output from "libcamera-hello --list-cameras" instead of requiring a flag
 import argparse
@@ -54,7 +55,27 @@ else:
     video_source = "hdmi"
 
 if video_source == "hdmi":
+    os.system('echo "1. Setting edid..."')
+    os.system('v4l2-ctl --set-edid=file=video-driver/1080p30edid --fix-edid-checksums')
+    os.system('sleep 10')
+
+    os.system('echo "2. Setting digital video timings..."')
+    os.system('v4l2-ctl --set-dv-bt-timings query')
+    os.system('sleep 4')
+
+    os.system('echo "3. Querying digital video timings..."')
+    os.system('v4l2-ctl --query-dv-timings')
+    os.system('sleep 4')
+
+    os.system('echo "4. Setting pixel format..."')
+    os.system('v4l2-ctl -v pixelformat=UYVY')
+    os.system('sleep 1')
+
+    os.system('echo "Done with video set-up."')
+
     from routes import video_hdmi as video
+
+
 elif video_source == "camera":
     from routes import video_camera as video
 
@@ -165,4 +186,4 @@ socketio.on_event('message', mouse.handle_websocket_message)
 if __name__ == '__main__':
     # Debug/Development
     #app.run(debug=False, host="0.0.0.0", port="5000")
-    socketio.run(app, debug=False, host="0.0.0.0", port="5000", allow_unsafe_werkzeug=True)
+    socketio.run(app, debug=False, host="0.0.0.0", port=5000, allow_unsafe_werkzeug=True)

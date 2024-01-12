@@ -1,6 +1,6 @@
 echo "1. Setting edid..."
 v4l2-ctl --set-edid=file=1080p30edid --fix-edid-checksums
-sleep 4
+sleep 10
 
 echo "2. Setting digital video timings..."
 # Success:
