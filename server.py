@@ -105,6 +105,7 @@ app.add_url_rule('/api/mouse/jiggle', view_func=mouse.api_mouse_jiggle)
 app.add_url_rule('/api/mouse/down', view_func=mouse.api_mouse_down, methods=['POST'])
 app.add_url_rule('/api/mouse/up', view_func=mouse.api_mouse_up, methods=['POST'])
 app.add_url_rule('/api/mouse/click', view_func=mouse.api_mouse_click, methods=['POST'])
+app.add_url_rule('/api/mouse/button', view_func=mouse.api_mouse_button, methods=['POST'])
 app.add_url_rule('/api/mouse/move/by', view_func=mouse.api_mouse_move_by, methods=['POST'])
 app.add_url_rule('/api/mouse/move/to', view_func=mouse.api_mouse_move_to, methods=['POST'])
 app.add_url_rule('/api/mouse/scroll', view_func=mouse.api_mouse_scroll, methods=['POST'])
@@ -125,6 +126,9 @@ app.add_url_rule('/api/raw/mouse-keys/move/by', view_func=mouse.api_raw_mouse_ke
 # Keyboard Routes
 app.add_url_rule('/api/keyboard/type', view_func=keyboard.api_keyboard_type, methods=['POST'])
 app.add_url_rule('/api/keyboard/press', view_func=keyboard.api_keyboard_press, methods=['POST'])
+
+# Debug Routes
+app.add_url_rule('/api/debug/send-keys', view_func=mouse.debug_send_keys, methods=['POST'])
 
 # Video Routes
 if video_source == "hdmi":
@@ -153,7 +157,6 @@ if video_source == "camera":
     app.add_url_rule('/raw/stream', view_func=video.raw_stream)
     app.add_url_rule('/raw/video-feed', view_func=video.raw_video_feed)
     app.add_url_rule('/api/config/video/camera', view_func=video.api_config_video, methods=['POST'])
-
 
 if __name__ == '__main__':
     # Debug/Development

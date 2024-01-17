@@ -38,6 +38,16 @@ last_y_pos = -100
 # Mouse
 #
 ######################################################################
+
+def debug_send_keys():
+    req = request.json
+    path = req.get("path")
+    control_keys = 0
+    hid_keycode = int(req.get("hid_keycode"))
+    release = bool(req.get("release"))
+    send_keystroke(path, control_keys, hid_keycode, release)
+    return Response()
+
 def api_mouse_jiggle():
     m.move_relative(10,0)
     time.sleep(.5)
@@ -57,6 +67,15 @@ def api_mouse_up():
 def api_mouse_click():
     print("Mouse click")
     send_mouse_event('/dev/hidg1', 0x1, 0, 0, 0, 0)
+    time.sleep(.05)
+    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 0, 0)
+    return Response()
+
+def api_mouse_button():
+    req = request.json
+    button = int(req.get("button"))
+    print("Mouse click button")
+    send_mouse_event('/dev/hidg1', button, 0, 0, 0, 0)
     time.sleep(.05)
     send_mouse_event('/dev/hidg1', 0x0, 0, 0, 0, 0)
     return Response()
