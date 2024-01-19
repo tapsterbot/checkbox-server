@@ -94,12 +94,12 @@ def api_raw_mouse_swipe_up():
     # Mouse Drag
     send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)
     send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)    
-    send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)  
-    send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)     
+    send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)
+    send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)
+    send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)
     time.sleep(.1)
     # Mouse Up
-    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 0, 0)    
+    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 0, 0)
     return Response(mimetype="application/json")
 
 def api_raw_mouse_swipe_down():
@@ -110,12 +110,12 @@ def api_raw_mouse_swipe_down():
     # Mouse Drag
     send_mouse_event('/dev/hidg1', 0x1, 0, 127, 0, 0)
     send_mouse_event('/dev/hidg1', 0x1, 0, 127, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 0, 127, 0, 0)    
-    send_mouse_event('/dev/hidg1', 0x1, 0, 127, 0, 0)  
-    send_mouse_event('/dev/hidg1', 0x1, 0, 127, 0, 0)     
+    send_mouse_event('/dev/hidg1', 0x1, 0, 127, 0, 0)
+    send_mouse_event('/dev/hidg1', 0x1, 0, 127, 0, 0)
+    send_mouse_event('/dev/hidg1', 0x1, 0, 127, 0, 0)
     time.sleep(.1)
     # Mouse Up
-    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 0, 0)    
+    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 0, 0)
     return Response(mimetype="application/json")
 
 def api_raw_mouse_swipe_left():
@@ -126,13 +126,13 @@ def api_raw_mouse_swipe_left():
     # Mouse Drag
     send_mouse_event('/dev/hidg1', 0x1, -127, 0, 0, 0)
     send_mouse_event('/dev/hidg1', 0x1, -127, 0, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, -127, 0, 0, 0)    
     send_mouse_event('/dev/hidg1', 0x1, -127, 0, 0, 0)
     send_mouse_event('/dev/hidg1', 0x1, -127, 0, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, -127, 0, 0, 0)  
+    send_mouse_event('/dev/hidg1', 0x1, -127, 0, 0, 0)
+    send_mouse_event('/dev/hidg1', 0x1, -127, 0, 0, 0)
     time.sleep(.1)
     # Mouse Up
-    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 0, 0)    
+    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 0, 0)
     return Response(mimetype="application/json")
 
 def api_raw_mouse_swipe_right():
@@ -143,13 +143,13 @@ def api_raw_mouse_swipe_right():
     # Mouse Drag
     send_mouse_event('/dev/hidg1', 0x1, 127, 0, 0, 0)
     send_mouse_event('/dev/hidg1', 0x1, 127, 0, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 127, 0, 0, 0)    
     send_mouse_event('/dev/hidg1', 0x1, 127, 0, 0, 0)
     send_mouse_event('/dev/hidg1', 0x1, 127, 0, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 127, 0, 0, 0)  
+    send_mouse_event('/dev/hidg1', 0x1, 127, 0, 0, 0)
+    send_mouse_event('/dev/hidg1', 0x1, 127, 0, 0, 0)
     time.sleep(.1)
     # Mouse Up
-    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 0, 0)    
+    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 0, 0)
     return Response(mimetype="application/json")
 
 def api_raw_mouse_move_by():
@@ -302,3 +302,5 @@ def handle_websocket_message(data):
             y_pos = data.get('data').get('y')
             print(x_pos, y_pos)
             mouse_move_by(x_pos, y_pos)
+        elif data.get('type') == "mouseClick":
+            api_mouse_click()

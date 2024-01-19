@@ -4,6 +4,35 @@
         <title>Checkbox - Blank Test Page</title>
         <meta name="description" content="Just a blank page, useful for set-up & configuration.">
         <script src="/static/js/socket.io.js"></script>
+        <script>
+            var socket = io()
+            var lastPositionTime = new Date().getTime()
+            var now = new Date().getTime()
+
+            socket.on('connect', function() {
+                    socket.emit('message', {type: 'connected'})
+            })
+
+            function onMouseMove(evt) {
+                console.log("mousemove")
+                var now = new Date().getTime()
+                if (now - lastPositionTime > 75) {
+                    lastPositionTime = new Date().getTime()
+                    console.log(evt.movementX, evt.movementY)
+                    x_pos = evt.movementX*30
+                    y_pos = evt.movementY*30
+                    socket.emit('message', {'type': 'mouseMove', 'data': {x:x_pos, y:y_pos}})
+                }
+            }
+
+            function onMouseClick(evt) {
+                console.log("mouse click")
+                socket.emit('message', {type: 'mouseClick'})
+            }
+
+            window.addEventListener('mousemove', onMouseMove, false);
+            window.addEventListener('click', onMouseClick, false);
+        </script>
     </head>
     <body>
     </body>
