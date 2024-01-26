@@ -24,9 +24,9 @@
 
 # Keyboard
 # X type
-# - type with keys
-# - key press
-# - key release
+# X type with keys
+# X key press
+# X key release
 
 import time
 import json
@@ -34,7 +34,8 @@ import mapper
 import numpy as np
 from zero_hid import Mouse
 from flask import Flask, request, render_template, Response
-from flask_socketio import SocketIO
+from flask_sock import Sock
+
 from routes import index, config, mouse, keyboard
 import uuid
 import os
@@ -83,7 +84,8 @@ elif video_source == "camera":
 app = Flask(__name__)
 app.config['SECRET_KEY'] = uuid.uuid4().hex
 app.url_map.strict_slashes = False
-socketio = SocketIO(app)
+#socketio = SocketIO(app)
+sock = Sock(app)
 
 # Set up temp mouse data
 app.last_mouse_click = {"x": None, "y": None}
@@ -181,9 +183,9 @@ if video_source == "camera":
     app.add_url_rule('/api/config/video/camera', view_func=video.api_config_video, methods=['POST'])
 
 # WebSocket config
-socketio.on_event('message', mouse.handle_websocket_message)
+sock.route('/socket')(mouse.handle_websocket_message)
+
 
 if __name__ == '__main__':
     # Debug/Development
-    #app.run(debug=False, host="0.0.0.0", port="5000")
-    socketio.run(app, debug=False, host="0.0.0.0", port=5000, allow_unsafe_werkzeug=True)
+    app.run(debug=False, host="0.0.0.0", port="5000")

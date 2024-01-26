@@ -286,21 +286,24 @@ def mouse_keys_move_by(x, y, transform = False):
 # Websocket Mouse
 #
 ######################################################################
-def handle_websocket_message(data):
-    print('received message: ' + str(data))
-    if data == "jiggle":
-        print("Jiggle!")
-        api_mouse_jiggle()
-    else:
-        print("JSON!")
-        #json_data = json.loads(data)
-        if data.get('type') == "connected":
-            print("Connected!")
-        elif data.get('type') == "mouseMove":
-            print("mouseMove!")
-            x_pos = data.get('data').get('x')
-            y_pos = data.get('data').get('y')
-            print(x_pos, y_pos)
-            mouse_move_by(x_pos, y_pos)
-        elif data.get('type') == "mouseClick":
-            api_mouse_click()
+def handle_websocket_message(ws):
+    print("yo, mouse socket")
+    while True:
+        data = ws.receive()
+        #print('received message: ' + str(data))
+        if data == "jiggle":
+            print("Jiggle!")
+            api_mouse_jiggle()
+        else:
+            #print("JSON!")
+            json_data = json.loads(data)
+            #if data.get('type') == "connected":
+            #    print("Connected!")
+            if json_data.get('type') == "mouseMove":
+                #print("mouseMove!")
+                x_pos = json_data.get('data').get('x')
+                y_pos = json_data.get('data').get('y')
+                #print(x_pos, y_pos)
+                mouse_move_by(x_pos, y_pos)
+            elif json_data.get('type') == "mouseClick":
+                api_mouse_click()
