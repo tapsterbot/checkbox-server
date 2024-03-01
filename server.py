@@ -184,6 +184,7 @@ if video_source == "camera":
 
 # WebSocket config
 sock.route('/socket')(mouse.handle_websocket_message)
+sock.route('/keyboard')(keyboard.handle_keyboard_websocket_message)
 
 
 if __name__ == '__main__':

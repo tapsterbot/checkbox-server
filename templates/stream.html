@@ -2,6 +2,12 @@
   <head>
     <title>Checkbox - Live Stream</title>
     <meta name="description" content="Checkbox live video stream">
+    <style>
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+    </style>
     <script>
       /*
       var sock = new WebSocket('ws://' + location.host + '/socket');
@@ -42,9 +48,14 @@
 
     <script type="text/javascript">
       var sock = new WebSocket('ws://' + location.host + '/socket');
+      var keysock = new WebSocket('ws://' + location.host + '/keyboard');
       var lastPositionTime = new Date().getTime()
+      var lastWheelTime = new Date().getTime()
       var now = new Date().getTime()
+      var shiftKeyState = true;
 
+      document.addEventListener('keyup', onKeyUp, false);
+      document.addEventListener('keydown', onKeyDown, false);
 
       document.addEventListener("DOMContentLoaded", function(event) {
           setupPointerLock();
@@ -82,33 +93,74 @@
               // we've got a pointerlock for our element, add a mouselistener
               document.addEventListener("mousemove", onMouseMove, false);
               document.addEventListener('click', onMouseClick, false);
+              document.addEventListener('wheel', onWheel, false);
               console.log("start pointerlock")
           } else {
               console.log("end pointerlock")
               // pointer lock is no longer active, remove the callback
               document.removeEventListener("mousemove", onMouseMove, false);
               document.removeEventListener("click", onMouseClick, false);
+              document.removeEventListener("wheel", onWheel, false);
           }
       };
 
       function onMouseMove(evt) {
-          console.log("mousemove")
+          console.log("mousemove " + "shift:" + shiftKeyState)
           var now = new Date().getTime()
           if (now - lastPositionTime > 50) {
               lastPositionTime = new Date().getTime()
               console.log(evt.movementX, evt.movementY)
               x_pos = evt.movementX*10
               y_pos = evt.movementY*10
-              sock.send(JSON.stringify({'type': 'mouseMove', 'data': {x:x_pos, y:y_pos}}))
+              sock.send(JSON.stringify({'type': 'mouseMove', 'data': {x:x_pos, y:y_pos, shiftKey: shiftKeyState}}))
           }
       }
 
       function onMouseClick(evt) {
           console.log("mouse click")
-          sock.send(JSON.stringify({type: 'mouseClick'}))
+          sock.send(JSON.stringify({type: 'mouseClick', shiftKey: shiftKeyState}))
       }
 
+      function onWheel(evt) {
+        var now = new Date().getTime()
+        if (now - lastWheelTime > 50) {
+          lastWheelTime = new Date().getTime()
+          console.log("wheel: " + evt.deltaY)
+          sock.send(JSON.stringify({type: 'wheel', 'data': {y: evt.deltaY, shiftKey: shiftKeyState}}))
+        }
+      }
 
+      function onKeyUp(evt) {
+          console.log("Key: ", evt.code)
+          if (evt.code == "ArrowUp") {
+            keysock.send(JSON.stringify({'type': 'upArrow'}))
+          } else if (evt.code == "ArrowDown") {
+            keysock.send(JSON.stringify({'type': 'downArrow'}))
+          }
+          if (evt.shiftKey) {
+            shiftKeyState = true
+            console.log("Shift key down!")
+          } else {
+            shiftKeyState = false
+            console.log("Shift key up!")
+          }
+      }
+
+      function onKeyDown(evt) {
+          console.log("Key: ", evt.code)
+          if (evt.code == "ArrowUp") {
+            keysock.send(JSON.stringify({'type': 'upArrow'}))
+          } else if (evt.code == "ArrowDown") {
+            keysock.send(JSON.stringify({'type': 'downArrow'}))
+          }
+          if (evt.shiftKey) {
+            shiftKeyState = true
+            console.log("Shift key down!")
+          } else {
+            shiftKeyState = false
+            console.log("Shift key up!")
+          }
+      }
 
     </script>
   </body>

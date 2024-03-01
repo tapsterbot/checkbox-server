@@ -21,3 +21,27 @@ def api_keyboard_press():
     print("Keyboard press key: %s" % key)
     k.press(modifiers, key)
     return Response(mimetype="application/json")
+
+######################################################################
+#
+# Websocket Keyboard
+#
+######################################################################
+def handle_keyboard_websocket_message(ws):
+    print("yo, keyboard socket")
+    while True:
+        data = ws.receive()
+        print('received message: ' + str(data))
+        try:
+            json_data = json.loads(data)
+            if json_data.get('type') == "upArrow":
+                print("upArrow!")
+                k.press([],0x52)
+                k.press([],0x52)
+            if json_data.get('type') == "downArrow":
+                print("downArrow!")
+                k.press([],0x51)
+                k.press([],0x51)
+        except Exception:
+            pass
+

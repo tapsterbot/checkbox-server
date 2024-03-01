@@ -307,3 +307,10 @@ def handle_websocket_message(ws):
                 mouse_move_by(x_pos, y_pos)
             elif json_data.get('type') == "mouseClick":
                 api_mouse_click()
+            elif json_data.get('type') == "wheel":
+                y = json_data.get('data').get('y')
+                print("wheel: ", y)
+                if y > 0:
+                    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 64, 0)
+                else:
+                    send_mouse_event('/dev/hidg1', 0x0, 0, 0, -64, 0)
