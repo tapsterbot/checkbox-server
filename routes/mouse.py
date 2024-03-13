@@ -8,7 +8,6 @@ from zero_hid import Mouse
 from zero_hid.hid.mouse import send_mouse_event
 from zero_hid import Keyboard, KeyCodes
 from zero_hid.hid.keyboard import send_keystroke
-from flask_socketio import SocketIO
 import json
 
 # Set up mouse
