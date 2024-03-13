@@ -1,0 +1,13 @@
+[Unit]
+Description=Checkbox Server
+After=network.target
+
+[Service]
+User=tapster
+WorkingDirectory=/home/tapster/Projects/valet/checkbox-server
+ExecStart=/home/tapster/Projects/valet/env/bin/python server.py --video=hdmi
+Restart=always
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
