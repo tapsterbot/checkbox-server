@@ -1,20 +1,42 @@
-$ sudo systemctl start checkbox-server
-$ sudo systemctl stop checkbox-server
-$ sudo systemctl restart checkbox-server
-$ sudo systemctl status checkbox-server
+$ sudo systemctl start checkbox-server-camera
+$ sudo systemctl stop checkbox-server-camera
+$ sudo systemctl restart checkbox-server-camera
+$ sudo systemctl status checkbox-server-camera
 
 # To install:
-$ sudo cp checkbox-server.service /etc/systemd/system/checkbox-server.service
-$ sudo chmod 644 /etc/systemd/system/checkbox-server.service
+$ sudo cp checkbox-server-camera.service /etc/systemd/system/checkbox-server-camera.service
+$ sudo chmod 644 /etc/systemd/system/checkbox-server-camera.service
 
 # Update systemd
 $ sudo systemctl daemon-reload
 
 # Start it up!
-$ sudo systemctl start checkbox-server
+$ sudo systemctl start checkbox-server-camera
 
 # Tail the logs
-$ journalctl -u checkbox-server -f
+$ journalctl -u checkbox-server-camera -f
 
 # To make it run on boot
-$ sudo systemctl enable checkbox-server
+$ sudo systemctl enable checkbox-server-camera
+
+---------------------------------------
+$ sudo systemctl start checkbox-server-hdmi
+$ sudo systemctl stop checkbox-server-hdmi
+$ sudo systemctl restart checkbox-server-hdmi
+$ sudo systemctl status checkbox-server-hdmi
+
+# To install:
+$ sudo cp checkbox-server-hdmi.service /etc/systemd/system/checkbox-server-hdmi.service
+$ sudo chmod 644 /etc/systemd/system/checkbox-server-hdmi.service
+
+# Update systemd
+$ sudo systemctl daemon-reload
+
+# Start it up!
+$ sudo systemctl start checkbox-server-hdmi
+
+# Tail the logs
+$ journalctl -u checkbox-server-hdmi -f
+
+# To make it run on boot
+$ sudo systemctl enable checkbox-server-hdmi
