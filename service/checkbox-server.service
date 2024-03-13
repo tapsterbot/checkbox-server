@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 User=tapster
-WorkingDirectory=/home/tapster/Projects/checkbox/checkbox-server
-ExecStart=/home/tapster/Projects/checkbox/env/bin/python server.py --video=camera
+WorkingDirectory=/home/tapster/Projects/valet/checkbox-server
+ExecStart=/home/tapster/Projects/valet/env/bin/python server.py --video=camera
 Restart=always
 RestartSec=10s
 
