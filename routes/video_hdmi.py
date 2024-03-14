@@ -29,10 +29,10 @@ last_mouse_screen_position = {"x": None, "y": None}
 
 # Set up camera
 camera = cv2.VideoCapture(0)
-#camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-#camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+#camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+#camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
 if not (camera.isOpened()):
     print("Could not open video device")
