@@ -5,13 +5,16 @@ import numpy as np
 import mapper
 from flask import current_app, request, Response
 from zero_hid import Mouse
-from zero_hid.hid.mouse import send_mouse_event
+from zero_hid.hid.mouse import relative_mouse_event
 from zero_hid import Keyboard, KeyCodes
 from zero_hid.hid.keyboard import send_keystroke
 import json
 
 # Set up mouse
 m = Mouse()
+
+# Set up keyboard
+k = Keyboard()
 
 # # Config helper functions
 # def app_file_path():
@@ -37,26 +40,26 @@ m = Mouse()
 #
 ######################################################################
 def api_mouse_jiggle():
-    m.move_relative(10,0)
+    m.move(10,0)
     time.sleep(.5)
-    m.move_relative(-10,0)
+    m.move(-10,0)
     return Response()
 
 def api_mouse_down():
     print("Mouse down")
-    send_mouse_event('/dev/hidg1', 0x1, 0, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 0, 0, 0, 0)
     return Response()
 
 def api_mouse_up():
     print("Mouse up")
-    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x0, 0, 0, 0, 0)
     return Response()
 
 def api_mouse_click():
     print("Mouse click")
-    send_mouse_event('/dev/hidg1', 0x1, 0, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 0, 0, 0, 0)
     time.sleep(.05)
-    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x0, 0, 0, 0, 0)
     return Response()
 
 def api_mouse_move_by():
@@ -82,73 +85,73 @@ def api_raw_mouse_drag_by():
     x_pos = req.get("x")
     y_pos = req.get("y")
     print("Mouse drag: (%s, %s)" % (x_pos, y_pos))
-    send_mouse_event('/dev/hidg1', 0x1, x_pos, y_pos, 0, 0)
+    relative_mouse_event(m.dev, 0x1, x_pos, y_pos, 0, 0)
     return Response(mimetype="application/json")
 
 def api_raw_mouse_swipe_up():
     print("Mouse swipe up")
     # Mouse Down
-    send_mouse_event('/dev/hidg1', 0x1, 0, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 0, 0, 0, 0)
     time.sleep(.1)
     # Mouse Drag
-    send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 0, -127, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 0, -127, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 0, -127, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 0, -127, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 0, -127, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 0, -127, 0, 0)
     time.sleep(.1)
     # Mouse Up
-    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x0, 0, 0, 0, 0)
     return Response(mimetype="application/json")
 
 def api_raw_mouse_swipe_down():
     print("Mouse swipe down")
     # Mouse Down
-    send_mouse_event('/dev/hidg1', 0x1, 0, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 0, 0, 0, 0)
     time.sleep(.1)
     # Mouse Drag
-    send_mouse_event('/dev/hidg1', 0x1, 0, 127, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 0, 127, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 0, 127, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 0, 127, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 0, 127, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 0, 127, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 0, 127, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 0, 127, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 0, 127, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 0, 127, 0, 0)
     time.sleep(.1)
     # Mouse Up
-    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x0, 0, 0, 0, 0)
     return Response(mimetype="application/json")
 
 def api_raw_mouse_swipe_left():
     print("Mouse swipe left")
     # Mouse Down
-    send_mouse_event('/dev/hidg1', 0x1, 0, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 0, 0, 0, 0)
     time.sleep(.1)
     # Mouse Drag
-    send_mouse_event('/dev/hidg1', 0x1, -127, 0, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, -127, 0, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, -127, 0, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, -127, 0, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, -127, 0, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, -127, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, -127, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, -127, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, -127, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, -127, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, -127, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, -127, 0, 0, 0)
     time.sleep(.1)
     # Mouse Up
-    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x0, 0, 0, 0, 0)
     return Response(mimetype="application/json")
 
 def api_raw_mouse_swipe_right():
     print("Mouse swipe right")
     # Mouse Down
-    send_mouse_event('/dev/hidg1', 0x1, 0, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 0, 0, 0, 0)
     time.sleep(.1)
     # Mouse Drag
-    send_mouse_event('/dev/hidg1', 0x1, 127, 0, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 127, 0, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 127, 0, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 127, 0, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 127, 0, 0, 0)
-    send_mouse_event('/dev/hidg1', 0x1, 127, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 127, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 127, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 127, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 127, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 127, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x1, 127, 0, 0, 0)
     time.sleep(.1)
     # Mouse Up
-    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 0, 0)
+    relative_mouse_event(m.dev, 0x0, 0, 0, 0, 0)
     return Response(mimetype="application/json")
 
 def api_raw_mouse_move_by():
@@ -166,26 +169,26 @@ def mouse_move_by(x, y, transform = False):
     if not -delta < x_pos < delta:
         if x_pos < -delta:
             while x_pos < -delta:
-                m.move_relative(-delta, 0)
+                m.move(-delta, 0)
                 x_pos += delta
 
         if x_pos > delta:
             while x_pos > delta:
-                m.move_relative(delta, 0)
+                m.move(delta, 0)
                 x_pos -= delta
 
     if not -delta < y_pos < delta:
         if y_pos < -delta:
             while y_pos < -delta:
-                m.move_relative(0, -delta)
+                m.move(0, -delta)
                 y_pos += delta
 
         if y_pos > delta:
             while y_pos > delta:
-                m.move_relative(0, delta)
+                m.move(0, delta)
                 y_pos -= delta
 
-    m.move_relative(x_pos, y_pos)
+    m.move(x_pos, y_pos)
 
 ######################################################################
 #
@@ -193,24 +196,24 @@ def mouse_move_by(x, y, transform = False):
 #
 ######################################################################
 def api_mouse_keys_jiggle():
-    send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP4)
+    send_keystroke(k.dev, 0, KeyCodes.KEY_KP4)
     time.sleep(.5)
-    send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP6)
+    send_keystroke(k.dev, 0, KeyCodes.KEY_KP6)
     return Response()
 
 def api_mouse_keys_down():
     print("Mouse keys down")
-    send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP0)
+    send_keystroke(k.dev, 0, KeyCodes.KEY_KP0)
     return Response()
 
 def api_mouse_keys_up():
     print("Mouse keys up")
-    send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KPDOT)
+    send_keystroke(k.dev, 0, KeyCodes.KEY_KPDOT)
     return Response()
 
 def api_mouse_keys_click():
     print("Mouse keys click")
-    send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP5)
+    send_keystroke(k.dev, 0, KeyCodes.KEY_KP5)
     return Response()
 
 def api_mouse_keys_move_to():
@@ -262,22 +265,22 @@ def mouse_keys_move_by(x, y, transform = False):
 
     if x_pos < 0:
         while x_pos < 0:
-            send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP4)
+            send_keystroke(k.dev, 0, KeyCodes.KEY_KP4)
             x_pos += 1
 
     if x_pos > 0:
         while x_pos > 0:
-            send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP6)
+            send_keystroke(k.dev, 0, KeyCodes.KEY_KP6)
             x_pos -= 1
 
     if y_pos < 0:
         while y_pos < 0:
-            send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP8)
+            send_keystroke(k.dev, 0, KeyCodes.KEY_KP8)
             y_pos += 1
 
     if y_pos > 0:
         while y_pos > 0:
-            send_keystroke('/dev/hidg0', 0, KeyCodes.KEY_KP2)
+            send_keystroke(k.dev, 0, KeyCodes.KEY_KP2)
             y_pos -= 1
 
 ######################################################################
@@ -310,6 +313,6 @@ def handle_websocket_message(ws):
                 y = json_data.get('data').get('y')
                 print("wheel: ", y)
                 if y > 0:
-                    send_mouse_event('/dev/hidg1', 0x0, 0, 0, 64, 0)
+                    relative_mouse_event(m.dev, 0x0, 0, 0, 64, 0)
                 else:
-                    send_mouse_event('/dev/hidg1', 0x0, 0, 0, -64, 0)
+                    relative_mouse_event(m.dev, 0x0, 0, 0, -64, 0)
