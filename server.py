@@ -36,7 +36,7 @@ from zero_hid import Mouse
 from flask import Flask, request, render_template, Response
 from flask_sock import Sock
 
-from routes import index, config, mouse, keyboard
+from routes import index, config, mouse, keyboard, touch
 import uuid
 import os
 
@@ -154,6 +154,9 @@ app.add_url_rule('/api/raw/mouse-keys/move/by', view_func=mouse.api_raw_mouse_ke
 # Keyboard Routes
 app.add_url_rule('/api/keyboard/type', view_func=keyboard.api_keyboard_type, methods=['POST'])
 app.add_url_rule('/api/keyboard/press', view_func=keyboard.api_keyboard_press, methods=['POST'])
+
+# Touch Routes
+app.add_url_rule('/api/touch/tap', view_func=touch.api_touch_tap, methods=['POST'])
 
 # Video Routes
 if video_source == "hdmi":
