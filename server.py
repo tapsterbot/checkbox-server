@@ -157,6 +157,7 @@ app.add_url_rule('/api/keyboard/press', view_func=keyboard.api_keyboard_press, m
 
 # Touch Routes
 app.add_url_rule('/api/touch/tap', view_func=touch.api_touch_tap, methods=['POST'])
+app.add_url_rule('/api/touch/move', view_func=touch.api_touch_move, methods=['POST'])
 
 # Video Routes
 if video_source == "hdmi":
