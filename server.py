@@ -57,8 +57,8 @@ else:
 
 if video_source == "hdmi":
     os.system('echo "1. Setting edid..."')
-    #os.system('v4l2-ctl --set-edid=file=video-driver/1080p30edid --fix-edid-checksums')
-    os.system('v4l2-ctl --set-edid=file=video-driver/720p60edid --fix-edid-checksums')
+    os.system('v4l2-ctl --set-edid=file=video-driver/1080p30edid --fix-edid-checksums')
+    #os.system('v4l2-ctl --set-edid=file=video-driver/720p60edid --fix-edid-checksums')
     os.system('sleep 10')
 
     os.system('echo "2. Setting digital video timings..."')
