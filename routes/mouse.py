@@ -237,16 +237,19 @@ def api_mouse_keys_move_to():
 
 def api_mouse_keys_move_home():
     print("Mouse keys move home")
-    mouse_move_by(-1500, -2000)
-    mouse_keys_move_by(0, 3)
-    mouse_keys_move_by(-10, 0)
-    mouse_keys_move_by(3, 0)
-    mouse_keys_move_by(0, -10)
-    mouse_keys_move_by(0, 3)
+    time.sleep(.2)
+    mouse_move_by(-414, -896)
+    time.sleep(.9)
+    mouse_move_by(-414, -896)
+    time.sleep(.9)
+    # mouse_keys_move_by(1, 0)
+    # time.sleep(.5)
+    # mouse_keys_move_by(0, 3)
+    # time.sleep(.2)
     global last_x_pos
     global last_y_pos
-    last_x_pos = 0
-    last_y_pos = 0
+    last_x_pos = -36
+    last_y_pos = -77
     return Response(mimetype="application/json")
 
 def api_raw_mouse_keys_drag_by():
