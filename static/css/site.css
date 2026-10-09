@@ -1,0 +1,140 @@
+/* Shared look for the Checkbox pages: colours, light/dark theme, top bar */
+:root {
+  --bg: #fff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --line: #d1d9e0;
+  --soft: #f6f8fa;
+  --link: #0969da;
+  --get: #1a7f37;
+  --post: #9a6700;
+  --primary: #1f883d;
+  --primary-hover: #1a7f37;
+  --selected: #ddf4ff;
+  --error: #cf222e;
+}
+/* Dark follows the system, unless the toggle picked a theme */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --line: #30363d;
+    --soft: #151b23;
+    --link: #4493f8;
+    --get: #3fb950;
+    --post: #d29922;
+    --primary: #238636;
+    --primary-hover: #2ea043;
+    --selected: #1f2d3d;
+    --error: #f85149;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1117;
+  --fg: #e6edf3;
+  --muted: #9198a1;
+  --line: #30363d;
+  --soft: #151b23;
+  --link: #4493f8;
+  --get: #3fb950;
+  --post: #d29922;
+  --primary: #238636;
+  --primary-hover: #2ea043;
+  --error: #f85149;
+  --selected: #1f2d3d;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+}
+code, pre, .mono {
+  font: 12.5px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+a {
+  color: var(--link);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+.topbar {
+  border-bottom: 1px solid var(--line);
+  background: var(--soft);
+}
+.topbar .inner, main {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+.title {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+#theme {
+  margin-left: auto;
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.pages {
+  margin: 20px 0 0;
+  padding-left: 20px;
+  font-size: 15px;
+}
+h2 {
+  margin: 28px 0 0;
+  font-size: 16px;
+}
+.pages li {
+  margin: 4px 0;
+}
+.about {
+  color: var(--muted);
+}
+main {
+  padding-bottom: 48px;
+}
+.note {
+  margin: 16px 0 0;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--soft);
+  color: var(--muted);
+}
+h1 {
+  margin: 0;
+  font-size: 18px;
+}
+.method {
+  color: var(--get);
+  font-weight: 600;
+}
+.method.POST {
+  color: var(--post);
+}
+.method.WS {
+  color: var(--muted);
+}
+@media (max-width: 640px) {
+  /* Keep the theme button next to the title, details on their own line */
+  .about {
+    order: 1;
+    width: 100%;
+  }
+}
+h2 + .pages {
+  margin-top: 8px;
+}

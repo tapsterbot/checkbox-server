@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Checkbox - {{ hostname }}</title>
+    <meta name="description" content="Checkbox server index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}">
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="inner">
+        <div class="title">
+          <h1>Checkbox Server</h1>
+          <span class="about">{{ hostname }} &middot; {{ video_source }} mode &middot; {{ request.host }}</span>
+          <button id="theme" onclick="toggleTheme()"></button>
+        </div>
+      </div>
+    </div>
+
+    <main>
+      <ul class="pages">
+        <li><a href="{{ url_for('stream') }}">Stream</a> &mdash; the phone screen, live. Click it to drive the phone.</li>
+        <li><a href="{{ url_for('raw_stream') }}">Raw stream</a> &mdash; the whole {{ "camera" if video_source == "camera" else "HDMI" }} image.</li>
+        <li><a href="{{ url_for('api_screenshot') }}">Screenshot</a> &mdash; a full size PNG of the screen.</li>
+        <li><a href="{{ url_for('explorer') }}">Explorer</a> &mdash; every API route, with examples you can send.</li>
+      </ul>
+
+      {% if video_source == "hdmi" %}
+      <p class="note">
+        Set up the <a href="{{ url_for('config_video') }}">video crop</a> for portrait and landscape,
+        and <a href="{{ url_for('config_mouse') }}">calibrate the mouse</a> to the screen.
+      </p>
+      {% endif %}
+
+      <h2>Links</h2>
+      <ul class="pages">
+        <li><a href="https://valetnet.dev">valetnet.dev</a> &mdash; Valet docs and setup.</li>
+        <li><a href="https://github.com/tapsterbot/valet">tapsterbot/valet</a> &mdash; the Valet repo on GitHub.</li>
+        <li><a href="https://github.com/tapsterbot/checkbox-server">tapsterbot/checkbox-server</a> &mdash; this server's source.</li>
+        <li><a href="https://github.com/tapsterbot/checkbox-client-python">tapsterbot/checkbox-client-python</a> &mdash; Python client for this server's API.</li>
+        <li><a href="https://tapster.io">tapster.io</a> &mdash; Tapster.</li>
+      </ul>
+    </main>
+  </body>
+</html>

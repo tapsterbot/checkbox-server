@@ -91,6 +91,7 @@ elif video_source == "camera":
 
 
 app = Flask(__name__)
+app.video_source = video_source
 app.config['SECRET_KEY'] = uuid.uuid4().hex
 app.url_map.strict_slashes = False
 #socketio = SocketIO(app)
@@ -116,6 +117,7 @@ else:
 # Routes
 # Index
 app.add_url_rule('/', view_func=index.index)
+app.add_url_rule('/explorer', view_func=index.explorer)
 
 # Ping
 @app.route('/api/ping')

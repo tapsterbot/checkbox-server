@@ -1,0 +1,505 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Checkbox - API explorer</title>
+    <meta name="description" content="Try the Checkbox server API from the browser">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}">
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      .topbar .inner, main {
+        max-width: 1280px;
+      }
+      main {
+        padding-top: 16px;
+      }
+      .warning {
+        margin: 0 0 16px;
+        color: var(--muted);
+      }
+      h2 {
+        margin: 14px 0 4px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 600;
+      }
+      code, textarea, input, select, pre, .curl {
+        font: 12.5px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr) auto;
+        gap: 20px;
+        align-items: start;
+      }
+      #routes {
+        max-height: calc(100vh - 140px);
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+      .route {
+        display: block;
+        width: 100%;
+        padding: 3px 6px;
+        border: 0;
+        border-radius: 6px;
+        background: none;
+        color: var(--fg);
+        text-align: left;
+        cursor: pointer;
+      }
+      .route:hover {
+        background: var(--soft);
+      }
+      .route.selected {
+        background: var(--selected);
+      }
+      .route .method {
+        display: inline-block;
+        min-width: 36px;
+        font-size: 11px;
+      }
+      .request-line {
+        display: flex;
+        gap: 6px;
+      }
+      .request-line input {
+        flex: 1;
+        min-width: 0;
+      }
+      input, select, textarea, button {
+        padding: 5px 8px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--bg);
+        color: var(--fg);
+      }
+      button {
+        cursor: pointer;
+      }
+      #send {
+        padding: 5px 16px;
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #fff;
+        font: 600 14px -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+      }
+      #send:hover {
+        background: var(--primary-hover);
+      }
+      #send:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      #description {
+        min-height: 1.5em;
+        margin: 8px 0;
+        color: var(--muted);
+      }
+      textarea {
+        width: 100%;
+        height: 100px;
+        resize: vertical;
+      }
+      .label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 12px 0 4px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .label button {
+        margin-left: auto;
+        padding: 1px 8px;
+        font: inherit;
+        font-weight: normal;
+      }
+      .curl {
+        padding: 6px 8px;
+        overflow-x: auto;
+        border-radius: 6px;
+        background: var(--soft);
+        white-space: pre;
+      }
+      #status {
+        color: var(--fg);
+      }
+      #status.error {
+        color: var(--error);
+      }
+      #response {
+        min-height: 60px;
+        max-height: 50vh;
+        margin: 0;
+        padding: 8px;
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      #response img {
+        max-width: 100%;
+        max-height: 45vh;
+      }
+      #history div {
+        padding: 1px 0;
+        color: var(--muted);
+        cursor: pointer;
+      }
+      #history div:hover {
+        color: var(--fg);
+      }
+      #live {
+        width: 270px;
+      }
+      #live-view {
+        display: none;
+        margin-top: 6px;
+        cursor: crosshair;
+      }
+      #live.on #live-view {
+        display: block;
+      }
+      #live-view img {
+        display: block;
+        width: 100%;
+        border-radius: 6px;
+      }
+      #live-note {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        #routes {
+          max-height: 240px;
+        }
+        #live {
+          width: 100%;
+          max-width: 270px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="inner">
+        <div class="title">
+          <h1><a href="{{ url_for('index') }}" style="color: inherit">Checkbox Server</a> / Explorer</h1>
+          <span class="about">{{ hostname }} &middot; {{ video_source }} mode &middot; {{ request.host }}</span>
+          <button id="theme" onclick="toggleTheme()"></button>
+        </div>
+      </div>
+    </div>
+
+    <main>
+    <p class="warning">Requests go to the real phone, so taps and key presses really happen.</p>
+    <div class="layout">
+      <div id="routes"></div>
+
+      <div>
+        <div class="request-line">
+          <select id="method">
+            <option>GET</option>
+            <option>POST</option>
+          </select>
+          <input id="path" spellcheck="false">
+          <button id="send" onclick="send()">Send</button>
+        </div>
+        <div id="description"></div>
+
+        <div class="label">JSON body (POST only)</div>
+        <textarea id="body" spellcheck="false"></textarea>
+
+        <div class="label">curl <button onclick="copyCurl(this)">Copy</button></div>
+        <div class="curl" id="curl"></div>
+
+        <div class="label">Response <span id="status"></span></div>
+        <div id="response"></div>
+
+        <div class="label">History</div>
+        <div id="history"></div>
+      </div>
+
+      <div id="live">
+        <label><input type="checkbox" id="live-toggle" onchange="toggleLive()"> Live view</label>
+        <div id="live-view" onclick="liveClick(event)">
+          <img id="live-img" alt="Live phone screen">
+        </div>
+        <div id="live-note">Uses CPU on the server while it's on. Click it to fill in touch coordinates.</div>
+      </div>
+    </div>
+    </main>
+
+    <script type="text/javascript">
+      var sections = {{ sections | tojson }};
+      var routes = {};
+      var requestHistory = [];
+      var touchPoint = 0;
+
+      function showRoutes() {
+        var list = document.getElementById("routes");
+        sections.forEach(function (section) {
+          var title = document.createElement("h2");
+          title.textContent = section[0];
+          list.appendChild(title);
+          section[1].forEach(function (row) {
+            routes[row.path] = row;
+            var button = document.createElement("button");
+            button.className = "route";
+            button.dataset.path = row.path;
+            button.innerHTML = '<span class="method ' + row.methods[0] + '">' + row.methods[0] + '</span> ';
+            button.appendChild(document.createTextNode(row.path));
+            button.onclick = function () { selectRoute(row.path); };
+            list.appendChild(button);
+          });
+        });
+      }
+
+      function stopResponseStream() {
+        var img = document.querySelector("#response img");
+        if (img && /video-feed$/.test(img.getAttribute("src"))) {
+          img.removeAttribute("src");
+          document.getElementById("response").innerHTML = "";
+          showStatus("");
+        }
+      }
+
+      function selectRoute(path, body) {
+        var row = routes[path];
+        stopResponseStream();
+        document.querySelectorAll(".route").forEach(function (button) {
+          button.classList.toggle("selected", button.dataset.path == path);
+        });
+        document.getElementById("path").value = path;
+        document.getElementById("method").value = row.methods.indexOf("POST") >= 0 && row.methods.indexOf("GET") < 0 ? "POST" : "GET";
+        document.getElementById("description").textContent = row.description;
+        document.getElementById("body").value = body !== undefined ? body : (row.example ? prettyJson(row.example) : "");
+        touchPoint = 0;
+
+        // WebSockets can't be tried with a plain request
+        var isSocket = row.methods.indexOf("WS") >= 0;
+        document.getElementById("send").disabled = isSocket;
+        showStatus(isSocket ? "WebSocket, used by the stream page, can't be sent from here" : "");
+        showCurl();
+      }
+
+      function prettyJson(text) {
+        try {
+          return JSON.stringify(JSON.parse(text), null, 2);
+        } catch (e) {
+          return text;
+        }
+      }
+
+      function showCurl() {
+        var method = document.getElementById("method").value;
+        var body = document.getElementById("body").value.trim();
+        var curl = "curl";
+        if (method == "POST") {
+          curl += " -X POST";
+          if (body) {
+            curl += " -H 'Content-Type: application/json' -d '" + JSON.stringify(parseBody(body) || body) + "'";
+          }
+        }
+        curl += " " + location.origin + document.getElementById("path").value;
+        document.getElementById("curl").textContent = curl;
+      }
+
+      function copyCurl(button) {
+        var text = document.getElementById("curl").textContent;
+        function done() {
+          button.textContent = "Copied";
+          setTimeout(function () { button.textContent = "Copy"; }, 1500);
+        }
+        // The clipboard API needs https, so fall back to selecting the text
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(done);
+          return;
+        }
+        var area = document.createElement("textarea");
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        document.body.removeChild(area);
+        done();
+      }
+
+      function parseBody(text) {
+        try {
+          return JSON.parse(text);
+        } catch (e) {
+          return undefined;
+        }
+      }
+
+      function showStatus(text, isError) {
+        var status = document.getElementById("status");
+        status.textContent = text;
+        status.className = isError ? "error" : "";
+      }
+
+      function send() {
+        if (document.getElementById("send").disabled) {
+          return;
+        }
+        var method = document.getElementById("method").value;
+        var path = document.getElementById("path").value;
+        var body = document.getElementById("body").value.trim();
+        var response = document.getElementById("response");
+        var options = {method: method};
+
+        if (method == "POST" && body) {
+          if (parseBody(body) === undefined) {
+            showStatus("Body isn't valid JSON", true);
+            return;
+          }
+          options.headers = {"Content-Type": "application/json"};
+          options.body = body;
+        }
+
+        // Video feeds never end, so show them as an image instead of waiting for them
+        if (/video-feed$/.test(path)) {
+          stopResponseStream();
+          var img = document.createElement("img");
+          img.src = path;
+          response.appendChild(img);
+          showStatus("streaming, select another route to stop it");
+          addHistory(method, path, body, "stream");
+          return;
+        }
+
+        stopResponseStream();
+        response.textContent = "";
+        showStatus("sending...");
+        var started = performance.now();
+        fetch(path, options).then(function (res) {
+          var elapsed = Math.round(performance.now() - started);
+          var type = res.headers.get("Content-Type") || "";
+          showStatus(res.status + " " + res.statusText + " in " + elapsed + " ms", !res.ok);
+          addHistory(method, path, body, res.status);
+          if (type.indexOf("image/") == 0) {
+            return res.blob().then(function (blob) {
+              var img = document.createElement("img");
+              img.src = URL.createObjectURL(blob);
+              response.appendChild(img);
+            });
+          }
+          return res.text().then(function (text) {
+            if (!text) {
+              response.textContent = "(empty response)";
+            } else if (type.indexOf("text/html") == 0) {
+              response.textContent = "HTML page, " + text.length + " bytes. ";
+              var link = document.createElement("a");
+              link.href = path;
+              link.target = "_blank";
+              link.textContent = "Open it";
+              response.appendChild(link);
+            } else {
+              response.textContent = prettyJson(text);
+            }
+          });
+        }).catch(function (err) {
+          showStatus(String(err), true);
+        });
+      }
+
+      function addHistory(method, path, body, result) {
+        requestHistory.unshift({method: method, path: path, body: body, result: result,
+                                time: new Date().toLocaleTimeString()});
+        requestHistory = requestHistory.slice(0, 15);
+        var list = document.getElementById("history");
+        list.innerHTML = "";
+        requestHistory.forEach(function (item) {
+          var row = document.createElement("div");
+          row.textContent = item.time + "  " + item.method + " " + item.path + "  " + item.result;
+          row.onclick = function () {
+            if (routes[item.path]) {
+              selectRoute(item.path, item.body);
+            }
+            document.getElementById("method").value = item.method;
+            document.getElementById("path").value = item.path;
+            showCurl();
+          };
+          list.appendChild(row);
+        });
+      }
+
+      function toggleLive() {
+        var on = document.getElementById("live-toggle").checked;
+        document.getElementById("live").classList.toggle("on", on);
+        // Clearing src closes the stream, so the server can stop producing it
+        var img = document.getElementById("live-img");
+        if (on) {
+          img.src = "{{ url_for('video_feed') }}";
+        } else {
+          img.removeAttribute("src");
+        }
+        try {
+          localStorage.setItem("explorer-live", on ? "1" : "");
+        } catch (e) {}
+      }
+
+      function liveClick(evt) {
+        // Touch coordinates are percent of the screen, which is what /stream shows
+        var rect = evt.currentTarget.getBoundingClientRect();
+        var x = Math.round((evt.clientX - rect.left) / rect.width * 1000) / 10;
+        var y = Math.round((evt.clientY - rect.top) / rect.height * 1000) / 10;
+        var path = document.getElementById("path").value;
+        var body = parseBody(document.getElementById("body").value) || {};
+
+        if (path == "/api/touch/move") {
+          // First click is the start, second the end
+          if (touchPoint == 0) {
+            body.x1 = x;
+            body.y1 = y;
+          } else {
+            body.x2 = x;
+            body.y2 = y;
+          }
+          touchPoint = 1 - touchPoint;
+        } else {
+          if (path != "/api/touch/tap") {
+            selectRoute("/api/touch/tap");
+          }
+          body = {x: x, y: y};
+        }
+        document.getElementById("body").value = JSON.stringify(body, null, 2);
+        showCurl();
+      }
+
+      document.getElementById("method").onchange = showCurl;
+      document.getElementById("path").oninput = showCurl;
+      document.getElementById("body").oninput = showCurl;
+      document.getElementById("path").onkeydown = function (evt) {
+        if (evt.key == "Enter") {
+          send();
+        }
+      };
+      document.getElementById("body").onkeydown = function (evt) {
+        if (evt.key == "Enter" && (evt.ctrlKey || evt.metaKey)) {
+          send();
+        }
+      };
+
+      showRoutes();
+      selectRoute(routes["/api/touch/tap"] ? "/api/touch/tap" : Object.keys(routes)[0]);
+      try {
+        if (localStorage.getItem("explorer-live")) {
+          document.getElementById("live-toggle").checked = true;
+          toggleLive();
+        }
+      } catch (e) {}
+    </script>
+  </body>
+</html>
