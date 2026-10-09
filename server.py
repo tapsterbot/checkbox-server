@@ -39,6 +39,7 @@ from flask_sock import Sock
 from routes import index, config, mouse, keyboard, touch
 import uuid
 import os
+import shutil
 
 # TODO: Use output from "libcamera-hello --list-cameras" instead of requiring a flag
 import argparse
@@ -60,6 +61,10 @@ else:
 
 # Video config location
 video_config_filepath = "config/video-config.json"
+
+# The video config is saved per device and isn't in git, start from the blank one
+if not os.path.exists(video_config_filepath):
+    shutil.copyfile("config/blank-video-config.json", video_config_filepath)
 
 if video_source == "hdmi":
     os.system('echo "1. Setting edid..."')
