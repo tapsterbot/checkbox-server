@@ -17,7 +17,7 @@
   },
   "stream": {
     "raw": {
-      "fps": 30,
+      "fps": 15,
       "size": "medium",
       "gray": false
     },

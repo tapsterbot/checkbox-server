@@ -125,7 +125,7 @@ crop_sizes = {"small": (270, 602), "medium": (540, 1204), "large": (1080, 2408)}
 max_fps = 30
 stream_settings = {
     # The raw fps is the camera frame rate, so it also caps the cropped stream
-    "raw": {"fps": 30, "size": "medium", "gray": False},
+    "raw": {"fps": 15, "size": "medium", "gray": False},
     "crop": {"fps": 10, "size": "medium", "gray": False},
 }
 settings_lock = Lock()
