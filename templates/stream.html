@@ -7,6 +7,58 @@
         height: 100%;
         overflow: hidden;
       }
+      /* The raw stream comes from the camera sideways, rotate it 90° counterclockwise */
+      img.raw {
+        /* Its width becomes its height once rotated, so size it to the window height */
+        width: 100vh;
+        height: auto;
+        transform-origin: top left;
+        transform: rotate(-90deg) translateX(-100%);
+      }
+      /* Gray raw stream is done by the browser, the camera always sends color */
+      img.gray {
+        filter: grayscale(1);
+      }
+      /* Stream settings HUD */
+      #hud {
+        position: fixed;
+        top: 8px;
+        right: 8px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        font: 13px sans-serif;
+      }
+      #hud-toggle {
+        cursor: pointer;
+        user-select: none;
+      }
+      #hud-panel {
+        display: none;
+        margin-top: 6px;
+      }
+      #hud.open #hud-panel {
+        display: block;
+      }
+      #hud-panel div {
+        margin: 6px 0;
+      }
+      #hud-panel label {
+        display: inline-block;
+        width: 50px;
+      }
+      #hud-fps {
+        vertical-align: middle;
+        width: 110px;
+      }
+      #hud-note, #hud-error {
+        font-size: 11px;
+        color: #aaa;
+      }
+      #hud-error {
+        color: #f88;
+      }
     </style>
     <script>
       /*
@@ -40,11 +92,102 @@
   <body>
     <div id="stream" class="col-lg-8  offset-lg-2">
       {% if style == "crop" %}
-        <img src="{{ url_for('video_feed') }}" height="100%">
+        <img id="video" src="{{ url_for('video_feed') }}" height="100%">
       {% elif style == "raw" %}
-        <img src="{{ url_for('raw_video_feed') }}" height="100%">
+        <img id="video" class="raw{% if settings and settings.raw.gray %} gray{% endif %}" src="{{ url_for('raw_video_feed') }}" height="100%">
       {% endif %}
     </div>
+
+    {% if settings %}
+    <!-- Outside #stream, so using it doesn't start pointer lock -->
+    <div id="hud">
+      <div id="hud-toggle" onclick="toggleHud()">&#9881; Stream</div>
+      <div id="hud-panel">
+        <div>
+          <label for="hud-fps">FPS</label>
+          <input id="hud-fps" type="range" min="1" max="{{ max_fps }}" step="1"
+                 oninput="showFps()" onchange="saveSetting('fps', Number(this.value))">
+          <span id="hud-fps-value"></span>
+        </div>
+        <div>
+          <label for="hud-size">Size</label>
+          <select id="hud-size" onchange="saveSetting('size', this.value)"></select>
+        </div>
+        <div>
+          <label for="hud-gray">Gray</label>
+          <input id="hud-gray" type="checkbox" onchange="saveSetting('gray', this.checked)">
+        </div>
+        <div id="hud-note"></div>
+        <div id="hud-error"></div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      // Settings are shared by everyone watching, and saved on the server
+      var hudStyle = "{{ style }}";
+      var hudSettings = {{ settings | tojson }};
+      var hudSizes = {{ sizes | tojson }};
+
+      function toggleHud() {
+        document.getElementById("hud").classList.toggle("open");
+      }
+
+      function showFps() {
+        document.getElementById("hud-fps-value").textContent = document.getElementById("hud-fps").value;
+      }
+
+      function showSettings() {
+        var settings = hudSettings[hudStyle];
+        document.getElementById("hud-fps").value = settings.fps;
+        showFps();
+
+        var select = document.getElementById("hud-size");
+        select.innerHTML = "";
+        for (var name in hudSizes) {
+          var option = document.createElement("option");
+          option.value = name;
+          option.textContent = name + " (" + hudSizes[name].join("x") + ")";
+          select.appendChild(option);
+        }
+        select.value = settings.size;
+
+        document.getElementById("hud-gray").checked = settings.gray;
+        if (hudStyle == "raw") {
+          document.getElementById("video").classList.toggle("gray", settings.gray);
+          document.getElementById("hud-note").textContent = "FPS is the camera rate, it also caps /stream. " +
+                                                            "Changing size restarts the camera.";
+        } else {
+          document.getElementById("hud-note").textContent = "Camera is at " + hudSettings.raw.fps + " fps (set on /raw/stream)";
+        }
+      }
+
+      function saveSetting(key, value) {
+        var change = {};
+        change[hudStyle] = {};
+        change[hudStyle][key] = value;
+        document.getElementById("hud-error").textContent = "";
+        fetch("/api/config/stream", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(change)
+        }).then(function (response) {
+          return response.json().then(function (data) {
+            if (response.ok) {
+              hudSettings = data;
+            } else {
+              document.getElementById("hud-error").textContent = data.error;
+            }
+            showSettings();
+          });
+        }).catch(function (err) {
+          document.getElementById("hud-error").textContent = String(err);
+          showSettings();
+        });
+      }
+
+      showSettings();
+    </script>
+    {% endif %}
 
     <script type="text/javascript">
       var sock = new WebSocket('ws://' + location.host + '/socket');
@@ -131,6 +274,9 @@
       }
 
       function onKeyUp(evt) {
+          if (evt.target.closest && evt.target.closest("#hud")) {
+            return
+          }
           console.log("Key: ", evt.code)
           if (evt.code == "ArrowUp") {
             keysock.send(JSON.stringify({'type': 'upArrow'}))
@@ -147,6 +293,9 @@
       }
 
       function onKeyDown(evt) {
+          if (evt.target.closest && evt.target.closest("#hud")) {
+            return
+          }
           console.log("Key: ", evt.code)
           if (evt.code == "ArrowUp") {
             keysock.send(JSON.stringify({'type': 'upArrow'}))

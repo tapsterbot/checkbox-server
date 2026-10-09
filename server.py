@@ -47,6 +47,9 @@ parser.add_argument('--video', help="video source: camera or hdmi\n" + \
                                     "example:\n" + \
                                     "  python server.py --video=camera\n" + \
                                     "  python server.py --video=hdmi\n\n")
+parser.add_argument('--stream-fps', type=float,
+                    help="max frame rate of the cropped camera stream,\n" + \
+                         "overrides the setting saved from the stream HUD")
 
 args = parser.parse_args()
 
@@ -54,6 +57,9 @@ if args.video:
     video_source = args.video
 else:
     video_source = "hdmi"
+
+# Video config location
+video_config_filepath = "config/video-config.json"
 
 if video_source == "hdmi":
     os.system('echo "1. Setting edid..."')
@@ -80,6 +86,8 @@ if video_source == "hdmi":
 
 elif video_source == "camera":
     from routes import video_camera as video
+    video.load_stream_settings(video_config_filepath, args.stream_fps)
+    video.start_camera()
 
 
 app = Flask(__name__)
@@ -92,7 +100,7 @@ sock = Sock(app)
 app.last_mouse_click = {"x": None, "y": None}
 
 # Video config location
-app.video_config_filepath = "config/video-config.json"
+app.video_config_filepath = video_config_filepath
 
 # Load mouse config
 app.mouse_config_filepath = "config/mouse-config.json"
@@ -186,6 +194,7 @@ if video_source == "camera":
     app.add_url_rule('/raw/stream', view_func=video.raw_stream)
     app.add_url_rule('/raw/video-feed', view_func=video.raw_video_feed)
     app.add_url_rule('/api/config/video/camera', view_func=video.api_config_video, methods=['POST'])
+    app.add_url_rule('/api/config/stream', view_func=video.api_config_stream, methods=['GET', 'POST'])
 
 # WebSocket config
 sock.route('/socket')(mouse.handle_websocket_message)
